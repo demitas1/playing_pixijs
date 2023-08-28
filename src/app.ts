@@ -1,28 +1,47 @@
 import * as PIXI from 'pixijs';
 
+
+class GameStage {
+  _app: PIXI.Application;
+  _texture: PIXI.Texture;
+  _bunny: PIXI.Sprite;
+
+  constructor(app: PIXI.Application) {
+    this._app = app;
+  }
+
+  async init(): Promise<void> {
+    this._texture = await PIXI.Assets.load('images/bunny.png');
+  }
+
+  start() {
+    this._bunny = new PIXI.Sprite(this._texture);
+    this._bunny.x = this._app.renderer.width / 2;
+    this._bunny.y = this._app.renderer.height / 2;
+    this._bunny.anchor.x = 0.5;
+    this._bunny.anchor.y = 0.5;
+    this._app.stage.addChild(this._bunny);
+
+    this._app.ticker.add(() => {
+      this.update();
+    });
+  }
+
+  update() {
+    this._bunny.rotation += 0.01;
+  }
+}
+
+
 // create Application and append its DOM to document
+// TODO: body style, set margin = 0px
 const app = new PIXI.Application({
   width: window.innerWidth,
   height: window.innerHeight,
 });
 document.body.appendChild(app.view as HTMLCanvasElement);
 
-// load game assets and then create the stage
-const url = 'images/bunny.png';
-PIXI.Assets.load(url).then((texture) => {
-  // create sprite
-  const bunny = new PIXI.Sprite(texture);
-  bunny.x = app.renderer.width / 2;
-  bunny.y = app.renderer.height / 2;
-  bunny.anchor.x = 0.5;
-  bunny.anchor.y = 0.5;
-
-  // Add the bunny to the scene we are building
-  app.stage.addChild(bunny);
-
-  // Listen for frame updates
-  app.ticker.add(() => {
-      // each frame we spin the bunny around a bit
-      bunny.rotation += 0.01;
-  });
+const stage = new GameStage(app);
+stage.init().then(() => {
+  stage.start();
 });
