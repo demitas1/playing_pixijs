@@ -1,11 +1,10 @@
 import * as PIXI from 'pixijs';
-import { GameStageBase, StageCreator } from './GameStageBase';
-import { createStage1 } from './Stage1';
-import { createStage2 } from './Stage2';
+import { IScene } from './IScene';
+import { SceneFactory } from './SceneFactory';
 
 
 class GameApp extends PIXI.Application {
-  _currentStage: GameStageBase = null;
+  _currentScene: IScene = null;
 
   constructor(options: Partial<PIXI.IApplicationOptions>) {
     super(options);
@@ -26,15 +25,15 @@ class GameApp extends PIXI.Application {
           window.innerHeight
         );
         // resize the stage
-        if (this._currentStage) {
-          this._currentStage.onResize();
+        if (this._currentScene) {
+          this._currentScene.onResize();
         }
       },
       false
     );
 
     // create initial game stage and start
-    this.startStage(createStage1);
+    this.startScene('scene1');
 
     // enable update callback
     this.ticker.add(() => {
@@ -49,36 +48,40 @@ class GameApp extends PIXI.Application {
         console.log(`custom event: ${ev.detail}`);
 
         if (ev.detail === '(end scene1)') {
-          this.startStage(createStage2);
+          this.startScene('scene2');
         }
         else if (ev.detail === '(end scene2)') {
-          this.startStage(createStage1);
+          this.startScene('scene1');
         }
       },
       false
     );
   }
 
-  // create and start GameStage
-  // GameStage should have its root Container
-  // then App adds GameStage's root to app.stage child
-  startStage(createStage: StageCreator) {
-    if (this._currentStage) {
-      const oldStage = this._currentStage;
-      this._currentStage = null;
-      oldStage.dispose();
+  // create and start GameScene
+  startScene(sceneName: string) {
+    const sceneBuilder = SceneFactory(sceneName);
+    if (! sceneBuilder) {
+      // error
+      return;
     }
 
-    const newStage = createStage(this.stage, this.screen);
-    newStage.init().then(async () => {
-      await newStage.start();
-      this._currentStage = newStage;
+    if (this._currentScene) {
+      const oldScene = this._currentScene;
+      this._currentScene = null;
+      oldScene.dispose();
+    }
+
+    const newScene = sceneBuilder(this.stage, this.screen);
+    newScene.init().then(async () => {
+      await newScene.start();
+      this._currentScene = newScene;
     });
   }
 
   update() {
-    if (this._currentStage) {
-      this._currentStage.update();
+    if (this._currentScene) {
+      this._currentScene.update();
     }
   }
 }

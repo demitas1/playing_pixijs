@@ -1,10 +1,10 @@
 import * as PIXI from 'pixijs';
-import { GameStageBase } from './GameStageBase';
+import { IScene } from './IScene';
 
 
-class Stage1 implements GameStageBase {
-  _stage : PIXI.Container;
-  _screen : PIXI.Rectangle;
+export class Scene2 implements IScene {
+  _stage: PIXI.Container;
+  _screen: PIXI.Rectangle;
 
   _root : PIXI.Container;
   _assets: Record<string, any>;
@@ -55,7 +55,7 @@ class Stage1 implements GameStageBase {
       const ev = new CustomEvent(
         'sceneEnd',
         {
-          detail: '(end scene1)',
+          detail: '(end scene2)',
         }
       );
       window.dispatchEvent(ev);
@@ -63,6 +63,7 @@ class Stage1 implements GameStageBase {
       this._tick = 0;
     }
     this._bunny.rotation += 0.01;
+    this._bunny.x += 0.1;
   }
 
   dispose() {
@@ -71,6 +72,6 @@ class Stage1 implements GameStageBase {
   }
 }
 
-export function createStage1(stage: PIXI.Container, screen: PIXI.Rectangle) {
-  return new Stage1(stage, screen);
+export function createScene2(stage: PIXI.Container, screen: PIXI.Rectangle) {
+  return new Scene2(stage, screen);
 }

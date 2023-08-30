@@ -1,7 +1,7 @@
 import * as PIXI from 'pixijs';
 
 
-export interface GameStageBase {
+export interface IScene {
   init: () => Promise<void>;
   start: () => Promise<void>;
   update: () => void;
@@ -9,5 +9,6 @@ export interface GameStageBase {
   dispose: () => void;
 }
 
-export type StageCreator =
-  (stage: PIXI.Container, screen: PIXI.Rectangle) => GameStageBase;
+// TODO: rename GameStage -> Scene
+export type SceneBuilder =
+  (stage: PIXI.Container, screen: PIXI.Rectangle) => IScene;
