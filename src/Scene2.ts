@@ -1,5 +1,6 @@
 import * as PIXI from 'pixijs';
 import { IScene } from './IScene';
+import { InputState } from './InputState';
 
 
 export class Scene2 implements IScene {
@@ -70,6 +71,9 @@ export class Scene2 implements IScene {
     this._stage.removeChild(this._root);
     this._root.destroy();
   }
+
+  attachInputState(_: InputState) {}
+
 }
 
 export function createScene2(stage: PIXI.Container, screen: PIXI.Rectangle) {

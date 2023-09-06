@@ -1,4 +1,5 @@
 import * as PIXI from 'pixijs';
+import { InputState } from './InputState';
 
 
 export interface IScene {
@@ -7,6 +8,8 @@ export interface IScene {
   update: () => void;
   onResize: () => void;
   dispose: () => void;
+
+  attachInputState: (_is : InputState) => void;
 }
 
 // TODO: rename GameStage -> Scene

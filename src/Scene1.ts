@@ -1,5 +1,6 @@
 import * as PIXI from 'pixijs';
 import { IScene } from './IScene';
+import { KeyState, InputState } from './InputState';
 
 // TODO: make SceneBase class for basic operations
 
@@ -11,10 +12,17 @@ class Scene1 implements IScene {
   _assets : Record<string, any>;
   _tick : number;
 
+  _inputState : InputState;
+
   _bunny : PIXI.Sprite;
   _shape : PIXI.Graphics;
   _character : PIXI.AnimatedSprite;
   _spritesheet : Record<string, any>;
+
+  _anime_up: Array<PIXI.Texture>;
+  _anime_down: Array<PIXI.Texture>;
+  _anime_left: Array<PIXI.Texture>;
+  _anime_right: Array<PIXI.Texture>;
 
   constructor(stage: PIXI.Container, screen: PIXI.Rectangle) {
     this._stage = stage;
@@ -92,6 +100,13 @@ class Scene1 implements IScene {
       this._spritesheet as PIXI.ISpritesheetData);
     await spritesheet.parse();
 
+    // TODO: new class to manage multiple animation
+    console.log(spritesheet.animations.rest_down);
+    this._anime_up = spritesheet.animations.rest_up;
+    this._anime_down = spritesheet.animations.rest_down;
+    this._anime_left = spritesheet.animations.rest_left;
+    this._anime_right = spritesheet.animations.rest_right;
+
     this._character = new PIXI.AnimatedSprite(
       spritesheet.animations.rest_down);
     this._root.addChild(this._character);
@@ -121,7 +136,7 @@ class Scene1 implements IScene {
   }
 
   update() {
-    this._tick += 1;
+    this._tick++;
     if (this._tick === 60) {
       const ev = new CustomEvent(
         'sceneEnd',
@@ -134,16 +149,54 @@ class Scene1 implements IScene {
       this._tick = 0;
     }
 
+    if (! this._inputState) {
+      console.log('input state is not ready.');
+      return;
+    }
+
     // 1. Sprite
     this._bunny.rotation += Math.PI / 360;
     this._bunny.x = this._screen.width / 2;
     this._bunny.y = this._screen.height / 2;
+
+    if (this._inputState.getKeyState('a') == KeyState.Down) {
+      this._character.x -= 1;
+      if (this._character.textures !== this._anime_left) {
+        this._character.textures = this._anime_left;
+        this._character.play();
+      }
+    }
+    if (this._inputState.getKeyState('d') == KeyState.Down) {
+      this._character.x += 1;
+      if (this._character.textures !== this._anime_right) {
+        this._character.textures = this._anime_right;
+        this._character.play();
+      }
+    }
+    if (this._inputState.getKeyState('w') == KeyState.Down) {
+      this._character.y -= 1;
+      if (this._character.textures != this._anime_up) {
+        this._character.textures = this._anime_up;
+        this._character.play();
+      }
+    }
+    if (this._inputState.getKeyState('s') == KeyState.Down) {
+      this._character.y += 1;
+      if (this._character.textures != this._anime_down) {
+        this._character.textures = this._anime_down;
+        this._character.play();
+      }
+    }
   }
 
   dispose() {
     this._stage.removeChild(this._root);
     this._root.destroy();
   }
+
+  attachInputState(_is: InputState) {
+    this._inputState  = _is;
+  };
 }
 
 export function createScene1(stage: PIXI.Container, screen: PIXI.Rectangle) {

@@ -1,10 +1,13 @@
 import * as PIXI from 'pixijs';
 import { IScene } from './IScene';
 import { SceneFactory } from './SceneFactory';
+import { InputState } from './InputState';
 
 
 class GameApp extends PIXI.Application {
+
   _currentScene: IScene = null;
+  _inputState : InputState;
 
   constructor(options: Partial<PIXI.IApplicationOptions>) {
     super(options);
@@ -31,6 +34,9 @@ class GameApp extends PIXI.Application {
       },
       false
     );
+
+    // create InputState instance
+    this._inputState = new InputState();
 
     // create initial game stage and start
     this.startScene('scene1');
@@ -76,7 +82,11 @@ class GameApp extends PIXI.Application {
     newScene.init().then(async () => {
       await newScene.start();
       this._currentScene = newScene;
+
+      // attach input state to the scene
+      this._currentScene.attachInputState(this._inputState);
     });
+
   }
 
   update() {
