@@ -1,6 +1,8 @@
 import * as PIXI from 'pixijs';
 import { IScene } from './IScene';
 import { KeyState, InputState } from './InputState';
+import { GameSprite } from './GameSprite';
+
 
 // TODO: make SceneBase class for basic operations
 
@@ -16,7 +18,7 @@ class Scene1 implements IScene {
 
   _bunny : PIXI.Sprite;
   _shape : PIXI.Graphics;
-  _character : PIXI.AnimatedSprite;
+  _character : GameSprite;
   _spritesheet : Record<string, any>;
 
   _anime_up: Array<PIXI.Texture>;
@@ -94,14 +96,19 @@ class Scene1 implements IScene {
     this._root.addChild(text1);
 
     // 6. AnimatedSprite
-    // spritesheet
+    // TODO: new class to manage multiple animation
+    //
+    //   this._assets.playerTexture : sprite texture
+    //   this._spritesheet : json to define animation
+    //
     const spritesheet = new PIXI.Spritesheet(
       this._assets.playerTexture,
       this._spritesheet as PIXI.ISpritesheetData);
     await spritesheet.parse();
 
-    // TODO: new class to manage multiple animation
-    console.log(spritesheet.animations.rest_down);
+    for (const k in spritesheet.animations) {
+      console.log(`animation ${k}`);
+    }
     this._anime_up = spritesheet.animations.rest_up;
     this._anime_down = spritesheet.animations.rest_down;
     this._anime_left = spritesheet.animations.rest_left;
@@ -109,13 +116,13 @@ class Scene1 implements IScene {
 
     this._character = new PIXI.AnimatedSprite(
       spritesheet.animations.rest_down);
-    this._root.addChild(this._character);
     this._character.animationSpeed = 0.1;
     this._character.play();
     this._character.anchor.x = 0.5;
     this._character.anchor.y = 0.5;
     this._character.x = 100;
     this._character.y = this._screen.height / 2;
+    this._root.addChild(this._character);
 
     // TODO:
     // 4. BitmapText
