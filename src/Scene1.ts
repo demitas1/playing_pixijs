@@ -21,11 +21,6 @@ class Scene1 implements IScene {
   _character : GameSprite;
   _spritesheet : Record<string, any>;
 
-  _anime_up: Array<PIXI.Texture>;
-  _anime_down: Array<PIXI.Texture>;
-  _anime_left: Array<PIXI.Texture>;
-  _anime_right: Array<PIXI.Texture>;
-
   constructor(stage: PIXI.Container, screen: PIXI.Rectangle) {
     this._stage = stage;
     this._screen = screen;
@@ -36,9 +31,10 @@ class Scene1 implements IScene {
     this._root.sortableChildren = true;  // enable zIndex
     this._tick = 0;
 
+    console.log('scene1: load start.');
+
     // loading game assets (spritesheet)
     // TODO: confirm workflow to generate spritesheet json
-    console.log('scene1: load start.');
     const urlSprite = 'animation/anime_frame.json';
     this._spritesheet = await (await fetch(urlSprite)).json();
     console.log(this._spritesheet);
@@ -55,6 +51,7 @@ class Scene1 implements IScene {
       }
     );
     this._assets = await PIXI.Assets.loadBundle('game-screen');
+
     console.log('scene1: load complete.');
   }
 
@@ -109,13 +106,11 @@ class Scene1 implements IScene {
     for (const k in spritesheet.animations) {
       console.log(`animation ${k}`);
     }
-    this._anime_up = spritesheet.animations.rest_up;
-    this._anime_down = spritesheet.animations.rest_down;
-    this._anime_left = spritesheet.animations.rest_left;
-    this._anime_right = spritesheet.animations.rest_right;
 
-    this._character = new PIXI.AnimatedSprite(
-      spritesheet.animations.rest_down);
+    // create character sprite
+    this._character = new GameSprite();
+    this._character.addAnimations(spritesheet.animations);
+
     this._character.animationSpeed = 0.1;
     this._character.play();
     this._character.anchor.x = 0.5;
@@ -166,32 +161,44 @@ class Scene1 implements IScene {
     this._bunny.x = this._screen.width / 2;
     this._bunny.y = this._screen.height / 2;
 
+    let moving = false;
     if (this._inputState.getKeyState('a') == KeyState.Down) {
       this._character.x -= 1;
-      if (this._character.textures !== this._anime_left) {
-        this._character.textures = this._anime_left;
-        this._character.play();
-      }
+      this._character._velocity.x = -1.0;
+      this._character._velocity.y = 0.0;
+      this._character.playAnimation("run_left");
+      moving = true;
     }
     if (this._inputState.getKeyState('d') == KeyState.Down) {
       this._character.x += 1;
-      if (this._character.textures !== this._anime_right) {
-        this._character.textures = this._anime_right;
-        this._character.play();
-      }
+      this._character._velocity.x = 1.0;
+      this._character._velocity.y = 0.0;
+      this._character.playAnimation("run_right");
+      moving = true;
     }
     if (this._inputState.getKeyState('w') == KeyState.Down) {
       this._character.y -= 1;
-      if (this._character.textures != this._anime_up) {
-        this._character.textures = this._anime_up;
-        this._character.play();
-      }
+      this._character._velocity.x = 0.0;
+      this._character._velocity.y = -1.0;
+      this._character.playAnimation("run_up");
+      moving = true;
     }
     if (this._inputState.getKeyState('s') == KeyState.Down) {
       this._character.y += 1;
-      if (this._character.textures != this._anime_down) {
-        this._character.textures = this._anime_down;
-        this._character.play();
+      this._character._velocity.x = 0.0;
+      this._character._velocity.y = 1.0;
+      this._character.playAnimation("run_down");
+      moving = true;
+    }
+    if (! moving) {
+      if (this._character._velocity.x < 0) {
+        this._character.playAnimation("rest_left");
+      } else if (this._character._velocity.x > 0) {
+        this._character.playAnimation("rest_right");
+      } else if (this._character._velocity.y < 0) {
+        this._character.playAnimation("rest_up");
+      } else {
+        this._character.playAnimation("rest_down");
       }
     }
   }
