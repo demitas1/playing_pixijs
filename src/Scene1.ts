@@ -68,7 +68,7 @@ class Scene1 implements IScene {
     this._bunny.y = this._screen.height / 2;
     this._bunny.anchor.x = 0.5;
     this._bunny.anchor.y = 0.5;
-    this._bunny.zIndex = 10;
+    this._bunny.zIndex = 0;
     this._root.addChild(this._bunny);
 
     // 2. Graphics
@@ -79,6 +79,7 @@ class Scene1 implements IScene {
       this._screen.height / 2,
       100,
       50);
+    this._shape.zIndex = 10;
     this._root.addChild(this._shape);
 
     // 3. Text
@@ -117,6 +118,7 @@ class Scene1 implements IScene {
     this._character.anchor.y = 0.5;
     this._character.x = 100;
     this._character.y = this._screen.height / 2;
+    this._shape.zIndex = -10;
     this._root.addChild(this._character);
 
     // TODO:
@@ -161,36 +163,44 @@ class Scene1 implements IScene {
     this._bunny.x = this._screen.width / 2;
     this._bunny.y = this._screen.height / 2;
 
-    let moving = false;
+    let x_dir = 0;
+    let y_dir = 0;
     if (this._inputState.getKeyState('a') == KeyState.Down) {
+      x_dir = -1;
+    } else if (this._inputState.getKeyState('d') == KeyState.Down) {
+      x_dir = 1;
+    }
+    if (this._inputState.getKeyState('w') == KeyState.Down) {
+      y_dir = -1;
+    } else if (this._inputState.getKeyState('s') == KeyState.Down) {
+      y_dir = 1;
+    }
+
+    // TODO: diagonal move
+    if (x_dir < 0) {
       this._character.x -= 1;
       this._character._velocity.x = -1.0;
       this._character._velocity.y = 0.0;
       this._character.playAnimation("run_left");
-      moving = true;
-    }
-    if (this._inputState.getKeyState('d') == KeyState.Down) {
+    } else if (x_dir > 0) {
       this._character.x += 1;
       this._character._velocity.x = 1.0;
       this._character._velocity.y = 0.0;
       this._character.playAnimation("run_right");
-      moving = true;
-    }
-    if (this._inputState.getKeyState('w') == KeyState.Down) {
+    } else if (y_dir < 0) {
       this._character.y -= 1;
       this._character._velocity.x = 0.0;
       this._character._velocity.y = -1.0;
       this._character.playAnimation("run_up");
-      moving = true;
-    }
-    if (this._inputState.getKeyState('s') == KeyState.Down) {
+    } else if (y_dir > 0) {
       this._character.y += 1;
       this._character._velocity.x = 0.0;
       this._character._velocity.y = 1.0;
       this._character.playAnimation("run_down");
-      moving = true;
     }
-    if (! moving) {
+
+    // TODO: diagonal rest
+    if (x_dir === 0 && y_dir === 0) {
       if (this._character._velocity.x < 0) {
         this._character.playAnimation("rest_left");
       } else if (this._character._velocity.x > 0) {

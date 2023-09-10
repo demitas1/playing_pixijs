@@ -3,7 +3,7 @@ import * as PIXI from 'pixijs';
 
 export class GameSprite extends PIXI.AnimatedSprite {
   _animations : Record<string, Array<PIXI.Texture>>;
-  _velocity : {x: number, y: number};
+  _velocity : {x: number, y: number};  // TODO: better property
 
   constructor(autoupdate=true)
   {
@@ -16,13 +16,20 @@ export class GameSprite extends PIXI.AnimatedSprite {
     this._velocity = {x: 0.0, y: 0.0};
   }
 
+  update(deltaTime: number): void
+  {
+    super.update(deltaTime);
+  }
+
   // preset loaded animations from spritesheet
-  addAnimations(animations: Record<string, Array<PIXI.Texture>>) {
+  addAnimations(animations: Record<string, Array<PIXI.Texture>>)
+  {
     this._animations = animations;
   }
 
   // play preloaded animations
-  playAnimation(label: string, restart: boolean=false) {
+  playAnimation(label: string, restart: boolean=false)
+  {
     if (! this._animations?.[label]) {
       return;
     }
