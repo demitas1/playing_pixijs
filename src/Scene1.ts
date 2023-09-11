@@ -1,7 +1,7 @@
 import * as PIXI from 'pixijs';
 import { IScene } from './IScene';
-import { KeyState, InputState } from './InputState';
 import { GameSprite } from './GameSprite';
+import { InputState, KeyState } from './InputState';
 
 
 // TODO: make SceneBase class for basic operations
@@ -13,8 +13,6 @@ class Scene1 implements IScene {
   _root : PIXI.Container;
   _assets : Record<string, any>;
   _tick : number;
-
-  _inputState : InputState;
 
   _bunny : PIXI.Sprite;
   _shape : PIXI.Graphics;
@@ -153,11 +151,6 @@ class Scene1 implements IScene {
       this._tick = 0;
     }
 
-    if (! this._inputState) {
-      console.log('input state is not ready.');
-      return;
-    }
-
     // 1. Sprite
     this._bunny.rotation += Math.PI / 360;
     this._bunny.x = this._screen.width / 2;
@@ -165,14 +158,14 @@ class Scene1 implements IScene {
 
     let x_dir = 0;
     let y_dir = 0;
-    if (this._inputState.getKeyState('a') == KeyState.Down) {
+    if (InputState.getKeyState('a') == KeyState.Down) {
       x_dir = -1;
-    } else if (this._inputState.getKeyState('d') == KeyState.Down) {
+    } else if (InputState.getKeyState('d') == KeyState.Down) {
       x_dir = 1;
     }
-    if (this._inputState.getKeyState('w') == KeyState.Down) {
+    if (InputState.getKeyState('w') == KeyState.Down) {
       y_dir = -1;
-    } else if (this._inputState.getKeyState('s') == KeyState.Down) {
+    } else if (InputState.getKeyState('s') == KeyState.Down) {
       y_dir = 1;
     }
 
@@ -217,10 +210,6 @@ class Scene1 implements IScene {
     this._stage.removeChild(this._root);
     this._root.destroy();
   }
-
-  attachInputState(_is: InputState) {
-    this._inputState  = _is;
-  };
 }
 
 export function createScene1(stage: PIXI.Container, screen: PIXI.Rectangle) {

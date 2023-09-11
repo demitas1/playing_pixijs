@@ -4,6 +4,7 @@ import * as PIXI from 'pixijs';
 export class GameSprite extends PIXI.AnimatedSprite {
   _animations : Record<string, Array<PIXI.Texture>>;
   _velocity : {x: number, y: number};  // TODO: better property
+  // TODO: subclass PlayerSprite to add _velocity property or other
 
   constructor(autoupdate=true)
   {

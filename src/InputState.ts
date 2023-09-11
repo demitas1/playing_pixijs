@@ -5,8 +5,8 @@ export enum KeyState {
   Down = 2,
 }
 
+class _InputState {
 
-export class InputState {
   _keyState : Record<string, KeyState>;
 
   constructor() {
@@ -44,7 +44,7 @@ export class InputState {
     return stateChanged;
   }
 
-  getKeyState(keyName: string) : KeyState {
+  public getKeyState(keyName: string) : KeyState {
     if (! this._keyState[keyName]) {
       return KeyState.Unknown;
     }
@@ -52,4 +52,6 @@ export class InputState {
   }
 }
 
+export const InputState = new _InputState();
 
+Object.freeze(InputState);  // make this singleton
