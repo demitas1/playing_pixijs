@@ -3,6 +3,8 @@ import { IScene } from './IScene';
 import { GameSprite } from './GameSprite';
 import { InputState, KeyState } from './InputState';
 
+import { CharPlayer } from './CharPlayer';
+
 
 // TODO: make SceneBase class for basic operations
 
@@ -16,7 +18,7 @@ class Scene1 implements IScene {
 
   _bunny : PIXI.Sprite;
   _shape : PIXI.Graphics;
-  _character : GameSprite;
+  _character : CharPlayer;
   _spritesheet : Record<string, any>;
 
   constructor(stage: PIXI.Container, screen: PIXI.Rectangle) {
@@ -62,22 +64,22 @@ class Scene1 implements IScene {
     // 1. Sprite
     const texture = this._assets.bunny;
     this._bunny = new PIXI.Sprite(texture);
-    this._bunny.x = this._screen.width / 2;
-    this._bunny.y = this._screen.height / 2;
+    this._bunny.x = this._screen.width / 5;
+    this._bunny.y = this._screen.height / 5;
     this._bunny.anchor.x = 0.5;
     this._bunny.anchor.y = 0.5;
-    this._bunny.zIndex = 0;
+    this._bunny.zIndex = 100;
     this._root.addChild(this._bunny);
 
     // 2. Graphics
     this._shape = new PIXI.Graphics();
     this._shape.beginFill(0x808080);
     this._shape.drawEllipse(
-      this._screen.width / 2,
-      this._screen.height / 2,
+      this._screen.width / 5,
+      this._screen.height / 5,
       100,
       50);
-    this._shape.zIndex = 10;
+    this._shape.zIndex = 0;
     this._root.addChild(this._shape);
 
     // 3. Text
@@ -107,16 +109,12 @@ class Scene1 implements IScene {
     }
 
     // create character sprite
-    this._character = new GameSprite();
-    this._character.addAnimations(spritesheet.animations);
+    this._character = new CharPlayer();
+    this._character.start({
+      animations: spritesheet.animations,
+    });
 
-    this._character.animationSpeed = 0.1;
     this._character.play();
-    this._character.anchor.x = 0.5;
-    this._character.anchor.y = 0.5;
-    this._character.x = 100;
-    this._character.y = this._screen.height / 2;
-    this._shape.zIndex = -10;
     this._root.addChild(this._character);
 
     // TODO:
@@ -153,57 +151,8 @@ class Scene1 implements IScene {
 
     // 1. Sprite
     this._bunny.rotation += Math.PI / 360;
-    this._bunny.x = this._screen.width / 2;
-    this._bunny.y = this._screen.height / 2;
-
-    let x_dir = 0;
-    let y_dir = 0;
-    if (InputState.getKeyState('a') == KeyState.Down) {
-      x_dir = -1;
-    } else if (InputState.getKeyState('d') == KeyState.Down) {
-      x_dir = 1;
-    }
-    if (InputState.getKeyState('w') == KeyState.Down) {
-      y_dir = -1;
-    } else if (InputState.getKeyState('s') == KeyState.Down) {
-      y_dir = 1;
-    }
-
-    // TODO: diagonal move
-    if (x_dir < 0) {
-      this._character.x -= 1;
-      this._character._velocity.x = -1.0;
-      this._character._velocity.y = 0.0;
-      this._character.playAnimation("run_left");
-    } else if (x_dir > 0) {
-      this._character.x += 1;
-      this._character._velocity.x = 1.0;
-      this._character._velocity.y = 0.0;
-      this._character.playAnimation("run_right");
-    } else if (y_dir < 0) {
-      this._character.y -= 1;
-      this._character._velocity.x = 0.0;
-      this._character._velocity.y = -1.0;
-      this._character.playAnimation("run_up");
-    } else if (y_dir > 0) {
-      this._character.y += 1;
-      this._character._velocity.x = 0.0;
-      this._character._velocity.y = 1.0;
-      this._character.playAnimation("run_down");
-    }
-
-    // TODO: diagonal rest
-    if (x_dir === 0 && y_dir === 0) {
-      if (this._character._velocity.x < 0) {
-        this._character.playAnimation("rest_left");
-      } else if (this._character._velocity.x > 0) {
-        this._character.playAnimation("rest_right");
-      } else if (this._character._velocity.y < 0) {
-        this._character.playAnimation("rest_up");
-      } else {
-        this._character.playAnimation("rest_down");
-      }
-    }
+    this._bunny.x = this._screen.width / 5;
+    this._bunny.y = this._screen.height / 5;
   }
 
   dispose() {

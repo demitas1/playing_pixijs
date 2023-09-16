@@ -3,8 +3,6 @@ import * as PIXI from 'pixijs';
 
 export class GameSprite extends PIXI.AnimatedSprite {
   _animations : Record<string, Array<PIXI.Texture>>;
-  _velocity : {x: number, y: number};  // TODO: better property
-  // TODO: subclass PlayerSprite to add _velocity property or other
 
   constructor(autoupdate=true)
   {
@@ -13,9 +11,9 @@ export class GameSprite extends PIXI.AnimatedSprite {
     // textures: PIXI.Texture[] | PIXI.FrameObject[],
 
     super([PIXI.Texture.EMPTY], autoupdate);
-
-    this._velocity = {x: 0.0, y: 0.0};
   }
+
+  start(options: Record<string, any>={}) {}
 
   update(deltaTime: number): void
   {
