@@ -48,6 +48,7 @@ class Scene1 implements IScene {
         bunny: 'images/bunny.png',
         font1: 'fonts/Orbitron-VariableFont_wght.woff',
         playerTexture: spriteTexture,
+        tilesetLevel1: 'tilemap/level1_tileset.png',
       }
     );
     this._assets = await PIXI.Assets.loadBundle('game-screen');
@@ -63,11 +64,15 @@ class Scene1 implements IScene {
     // explore pixiJS display objects
     // 1. Sprite
     const texture = this._assets.bunny;
+    texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
+    //texture.baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR;
     this._bunny = new PIXI.Sprite(texture);
     this._bunny.x = this._screen.width / 5;
     this._bunny.y = this._screen.height / 5;
     this._bunny.anchor.x = 0.5;
     this._bunny.anchor.y = 0.5;
+    this._bunny.scale.x = 2.0;
+    this._bunny.scale.y = 2.0;
     this._bunny.zIndex = 100;
     this._root.addChild(this._bunny);
 
@@ -94,8 +99,6 @@ class Scene1 implements IScene {
     this._root.addChild(text1);
 
     // 6. AnimatedSprite
-    // TODO: new class to manage multiple animation
-    //
     //   this._assets.playerTexture : sprite texture
     //   this._spritesheet : json to define animation
     //
@@ -117,9 +120,42 @@ class Scene1 implements IScene {
     this._character.play();
     this._root.addChild(this._character);
 
+    // 5. Tilemap
+    // TODO: make tilemap from json
+    const baseTileImage = PIXI.BaseTexture.from('tilesetLevel1');
+    baseTileImage.scaleMode = PIXI.SCALE_MODES.NEAREST;
+
+    const tile001 = new PIXI.Texture(
+      baseTileImage,
+      new PIXI.Rectangle(16, 0, 16, 16));
+
+    const sprite001 = new PIXI.Sprite(tile001);
+    sprite001.x = 0;
+    sprite001.y = 0;
+    sprite001.anchor.x = 0.0;
+    sprite001.anchor.y = 0.0;
+    sprite001.scale.x = 2.0;
+    sprite001.scale.y = 2.0;
+    sprite001.zIndex = 0;
+
+    const tile002 = new PIXI.Texture(
+      baseTileImage,
+      new PIXI.Rectangle(32, 0, 16, 16));
+
+    const sprite002 = new PIXI.Sprite(tile002);
+    sprite002.x = 32;
+    sprite002.y = 0;
+    sprite002.anchor.x = 0.0;
+    sprite002.anchor.y = 0.0;
+    sprite002.scale.x = 2.0;
+    sprite002.scale.y = 2.0;
+    sprite002.zIndex = 0;
+
+    this._root.addChild(sprite001);
+    this._root.addChild(sprite002);
+
     // TODO:
     // 4. BitmapText
-    // 5. Tilemap / Tileset
   }
 
   onResize() {
